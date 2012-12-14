@@ -106,13 +106,13 @@ module Vzaar
     # Note: even if you created an authorized instance of Vzaar::Base class
     # if you don't set the 'authenticated' param to true you will receive
     # only public videos.
-    def video_list(login = nil, authenticated = false)
+    def video_list(login = nil, authenticated = false, page = 1, count = 10)
       result = []
       response = nil
       if authenticated
-        response = auth_connection(HTTP_GET, "/api/#{login}/videos.xml")
+        response = auth_connection(HTTP_GET, "/api/#{login}/videos.xml?page=#{page}&count=#{count}")
       else
-        response = public_connection(HTTP_GET, "/api/#{login}/videos.xml")
+        response = public_connection(HTTP_GET, "/api/#{login}/videos.xml?page=#{page}&count=#{count}")
       end
       if response and response.body
         doc = REXML::Document.new response.body
