@@ -1,4 +1,4 @@
-require 'ruby-debug'
+#require 'ruby-debug'
 module Vzaar
 
   # You can use Vzaar::Base class for accessing and managing your resources on vzaar.
