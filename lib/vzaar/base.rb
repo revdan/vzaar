@@ -1,3 +1,4 @@
+require 'ruby-debug'
 module Vzaar
 
   # You can use Vzaar::Base class for accessing and managing your resources on vzaar.
@@ -233,12 +234,13 @@ module Vzaar
     # * vzaar.process_video :guid => signature.guid, 
     # :title => 'Some title', :description => 'Some description', 
     # :profile => 1, :transcoding => true
+    # :profile => 6, :width => "1200", :bitrate = "1024", :replace_id = "918833"
     def process_video(options = {})
       vzaar_video_id = nil
       request_xml = %{
         <?xml version="1.0" encoding="UTF-8"?>
         <vzaar-api>
-          <video>#{options[:id]}
+          <video>
             <guid>#{options[:guid]}</guid>
             <title>#{options[:title]}</title>
             <description>#{options[:description]}</description>
@@ -249,6 +251,22 @@ module Vzaar
             <transcoding>#{options[:transcoding]}</transcoding>
         }
       end
+
+      if options[:replace_id]
+        request_xml += %{
+            <replace_id>#{options[:replace_id]}</replace_id>
+        }
+      end
+
+      if options[:profile] == 6 && options[:width] && options[:bitrate]
+        request_xml += %{
+            <encoding>
+              <width>#{options[:width]}</width>
+              <bitrate>#{options[:bitrate]}</bitrate>
+            </encoding>
+        }
+      end
+      
       request_xml += %{ 
           </video>
         </vzaar-api>
@@ -267,19 +285,28 @@ module Vzaar
     # Usage:
     # * vzaar.upload_video '/home/me/video.mp4', 'some title', 'some desc', '1'
     # * vzaar.upload_video '/home/me/video.mp4', ""
-    def upload_video(path, title = "", description = "", profile = "", transcoding = nil, replace = "")
+    # def upload_video(path, title = "", description = "", profile = "", transcoding = nil)
+    
+    def upload_video(opts)
       # Get signature
       sig = signature
       @logger.debug "Uploading..." 
       # Upload to S3
       res = upload_to_s3 sig.acl, sig.bucket, sig.policy, sig.aws_access_key,
-        sig.signature, sig.key, path
+        sig.signature, sig.key, opts[:path]
       if res
         @logger.debug "Upload complete"
         # And process in vzaar
-        process_video :guid => sig.guid, :title => title,
-          :description => description, :profile => profile,
-          :transcoding => transcoding, :id => replace
+        process_video(
+          {
+            :guid => sig.guid,
+            :title => opts[:title],
+            :description => opts[:description],
+            :profile => opts[:profile],
+            :transcoding => opts[:transcoding],
+            :bitrate => opts[:bitrate],
+            :width => opts[:width]
+          })
       else
         @logger.debug "Upload to s3 failed"
         return nil
