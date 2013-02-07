@@ -106,13 +106,13 @@ module Vzaar
     # Note: even if you created an authorized instance of Vzaar::Base class
     # if you don't set the 'authenticated' param to true you will receive
     # only public videos.
-    def video_list(login = nil, authenticated = false, page = 1, count = 10)
+    def video_list(login = nil, authenticated = false)
       result = []
       response = nil
       if authenticated
-        response = auth_connection(HTTP_GET, "/api/#{login}/videos.xml?page=#{page}&count=#{count}")
+        response = auth_connection(HTTP_GET, "/api/#{login}/videos.xml")
       else
-        response = public_connection(HTTP_GET, "/api/#{login}/videos.xml?page=#{page}&count=#{count}")
+        response = public_connection(HTTP_GET, "/api/#{login}/videos.xml")
       end
       if response and response.body
         doc = REXML::Document.new response.body
@@ -238,7 +238,7 @@ module Vzaar
       request_xml = %{
         <?xml version="1.0" encoding="UTF-8"?>
         <vzaar-api>
-          <video>
+          <video>#{options[:id]}
             <guid>#{options[:guid]}</guid>
             <title>#{options[:title]}</title>
             <description>#{options[:description]}</description>
@@ -267,7 +267,7 @@ module Vzaar
     # Usage:
     # * vzaar.upload_video '/home/me/video.mp4', 'some title', 'some desc', '1'
     # * vzaar.upload_video '/home/me/video.mp4', ""
-    def upload_video(path, title = "", description = "", profile = "", transcoding = nil)
+    def upload_video(path, title = "", description = "", profile = "", transcoding = nil, replace = "")
       # Get signature
       sig = signature
       @logger.debug "Uploading..." 
@@ -279,7 +279,7 @@ module Vzaar
         # And process in vzaar
         process_video :guid => sig.guid, :title => title,
           :description => description, :profile => profile,
-          :transcoding => transcoding
+          :transcoding => transcoding, :id => replace
       else
         @logger.debug "Upload to s3 failed"
         return nil
