@@ -240,7 +240,7 @@ module Vzaar
       request_xml = %{
         <?xml version="1.0" encoding="UTF-8"?>
         <vzaar-api>
-          <video>#{options[:replace_id]
+          <video>#{options[:replace_id]}
             <guid>#{options[:guid]}</guid>
             <title>#{options[:title]}</title>
             <description>#{options[:description]}</description>
