@@ -240,7 +240,7 @@ module Vzaar
       request_xml = %{
         <?xml version="1.0" encoding="UTF-8"?>
         <vzaar-api>
-          <video>#{options[:replace_id]}
+          <video>
             <guid>#{options[:guid]}</guid>
             <title>#{options[:title]}</title>
             <description>#{options[:description]}</description>
@@ -249,6 +249,12 @@ module Vzaar
       if !options[:transcoding].nil?
         request_xml += %{
             <transcoding>#{options[:transcoding]}</transcoding>
+        }
+      end
+         
+      if options[:replace_id]
+        request_xml += %{
+            <replace_id>#{options[:replace_id]}</replace_id>
         }
       end
 
