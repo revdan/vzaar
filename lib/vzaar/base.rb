@@ -299,7 +299,8 @@ module Vzaar
             :profile => opts[:profile],
             :transcoding => opts[:transcoding],
             :bitrate => opts[:bitrate],
-            :width => opts[:width]
+            :width => opts[:width],
+            :replace_id => opts[:replace_id]
           })
       else
         @logger.debug "Upload to s3 failed"
