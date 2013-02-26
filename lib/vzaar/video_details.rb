@@ -6,6 +6,7 @@ module Vzaar
       :author_account_type_id,
       :author_name,
       :author_url,
+      :description,
       :duration,
       :framegrab_height,
       :framegrab_url,
@@ -34,6 +35,8 @@ module Vzaar
         doc.elements['oembed/author_name'].text : ''
       @author_url = doc.elements['oembed/author_url'] ? 
         doc.elements['oembed/author_url'].text : ''
+      @description = doc.elements['oembed/description'] ?
+        doc.elements['oembed/description'].text : ''
       @duration = doc.elements['oembed/duration'] ?
         doc.elements['oembed/duration'].text : ''
       @framegrab_height = doc.elements['oembed/framegrab_height'] ?
